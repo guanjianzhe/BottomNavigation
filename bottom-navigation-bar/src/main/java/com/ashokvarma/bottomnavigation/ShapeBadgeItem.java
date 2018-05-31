@@ -1,10 +1,12 @@
 package com.ashokvarma.bottomnavigation;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IntDef;
@@ -35,8 +37,9 @@ public class ShapeBadgeItem extends BadgeItem<ShapeBadgeItem> {
     public static final int SHAPE_STAR_4_VERTICES = 4;
     public static final int SHAPE_STAR_5_VERTICES = 5;
     public static final int SHAPE_STAR_6_VERTICES = 6;
+    public static final int SHAPE_BITMAP = 7;
 
-    @IntDef({SHAPE_OVAL, SHAPE_RECTANGLE, SHAPE_HEART, SHAPE_STAR_3_VERTICES, SHAPE_STAR_4_VERTICES, SHAPE_STAR_5_VERTICES, SHAPE_STAR_6_VERTICES})
+    @IntDef({SHAPE_OVAL, SHAPE_RECTANGLE, SHAPE_HEART, SHAPE_STAR_3_VERTICES, SHAPE_STAR_4_VERTICES, SHAPE_STAR_5_VERTICES, SHAPE_STAR_6_VERTICES, SHAPE_BITMAP})
     @Retention(RetentionPolicy.SOURCE)
     @interface Shape {
     }
@@ -55,8 +58,19 @@ public class ShapeBadgeItem extends BadgeItem<ShapeBadgeItem> {
     private int mEdgeMarginInPx;
 
     private RectF mCanvasRect = new RectF();
+    private Rect mRect = new Rect();
     private Paint mCanvasPaint;
     private Path mPath = new Path();// used for pathDrawables
+    private Bitmap mBitmap;
+
+    public ShapeBadgeItem(Bitmap bitmap) {
+        mBitmap = bitmap;
+
+        mCanvasPaint = new Paint();
+        mCanvasPaint.setColor(mShapeColor);
+        mCanvasPaint.setAntiAlias(true);
+        mCanvasPaint.setStyle(Paint.Style.FILL);
+    }
 
     public ShapeBadgeItem() {
         mCanvasPaint = new Paint();
@@ -181,6 +195,8 @@ public class ShapeBadgeItem extends BadgeItem<ShapeBadgeItem> {
             drawStar(canvas, mShape);
         } else if (mShape == SHAPE_HEART) {
             drawHeart(canvas);
+        } else if (mShape == SHAPE_BITMAP) {
+            drawBitmap(canvas);
         }
     }
 
@@ -337,5 +353,17 @@ public class ShapeBadgeItem extends BadgeItem<ShapeBadgeItem> {
         mPath.close();
 
         canvas.drawPath(mPath, mCanvasPaint);
+    }
+
+    private void drawBitmap(Canvas canvas) {
+        mRect.set(0, 0, canvas.getWidth(), canvas.getHeight());
+        if (mBitmap != null) {
+            canvas.drawBitmap(mBitmap, null, mRect, null);
+        }
+    }
+
+    public ShapeBadgeItem setBitmap(Bitmap mBitmap) {
+        this.mBitmap = mBitmap;
+        return this;
     }
 }
